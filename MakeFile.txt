@@ -1,0 +1,2 @@
+Assemble: Assemble.cpp 
+	g++ -g Assemble.cpp -o Assemble

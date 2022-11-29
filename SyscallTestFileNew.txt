@@ -1,0 +1,110 @@
+          .data
+          .text
+          .align 2
+          .globl main
+syscallstart:
+  beq $zero, $v0, mainclass
+  addi $sp, $sp, -16
+  sw $k0, 0($sp)
+  sw $t0, 4($sp)
+  sw $t1, 8($sp)
+  sw $t2, 12($sp)
+  
+  #addi $t0, 0, 1
+  #beq $v0, $t0, syscall1
+  #addi $t0, $0, 5
+  #beq $v0, $t0, syscall5
+  addi $t0, $0, 11
+  beq $v0, $t0, syscall11
+  #addi $t0, $0, 12
+  #beq $v0, $t0, syscall12
+
+sycall1:
+  addi $t0, $zero, 16
+  loop1:
+    lw $t1, 0($t0)
+    beq $t1, $zero, loop1
+    addi $t1, $t1, -128
+    addi $t0, $zero, 48
+    slt $t2, $t1, $t0
+    bne $t2, $zero, exit1
+    addi $t0, $zero, 57
+    slt $t2, $t0, $t1
+    bne $t2, $zero, exit1
+    add $v0, $t1, $zero
+exit1:
+  j loop1
+  lw $k0, 0($sp)
+  lw $t0, 4($sp)
+  lw $t1, 8($sp)
+  lw $t2, 12($sp)
+  addi $sp, $sp, 16
+  jr $k0
+
+syscall5:
+  intprint:
+    addi $sp, $sp, -8
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    addi $t0, $t0, 10 #divide by 10
+    add $s0, $zero, $a0 #saved i
+
+    div $s0, $t0 #i = i/10
+    mflo $t1 #t1 = jvalue
+    div $s0, $t0 #i = i/10
+    mfhi $s0 #s0 = i
+    slt $t2, $zero, $s0
+    addi $t3, $0, 1
+    beq $t2, $t3, intprint
+    addi $t4, $0, 32
+    sw $v0, 0($t4)
+
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 8
+    jr $ra
+
+	
+
+syscall11:
+  addi $t0, $0, 32 #17th instruction
+  sw $a0, 0($t0)
+  
+  lw $k0, 0($sp)
+  lw $t0, 4($sp)
+  lw $t1, 8($sp)
+  lw $t2, 12($sp)
+  addi $sp, $sp, 16
+  jr $k0
+
+syscall12:
+  addi $t0, $zero, 16
+  loop:
+    lw $t1, 0($t0)
+    beq $zero, $t1, exit
+       j loop
+  exit:
+    addi $t1, $t1, -128
+    add $v0, $zero, $t1  
+  lw $k0, 0($sp)
+  lw $t0, 4($sp)
+  lw $t1, 8($sp)
+  lw $t2, 12($sp)
+  addi $sp, $sp, 16
+  jr $k0
+
+mainclass:
+  addi $v0, $zero, 11
+  addi $a0, $zero, 72 #h
+  syscall
+  addi $a0, $zero, 101 #e
+  syscall
+  addi $a0, $zero, 108 #l
+  syscall
+  addi $a0, $zero, 108 #l
+  syscall
+  addi $a0, $zero, 111 #o
+  syscall
+  addi $a0, $zero, 10 #\n
+  syscall
+  jr $ra
